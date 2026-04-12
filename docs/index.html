@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/VolumePackCaculator/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>volumepackcaculator</title>
+    <script type="module" crossorigin src="/VolumePackCaculator/assets/index-Df53O1QM.js"></script>
+    <link rel="stylesheet" crossorigin href="/VolumePackCaculator/assets/index-CqLr8KVv.css">
+  </head>
+  <body style="background-color: rgb(252, 232, 232);">
+    <div class="row justify-content-center">
+      <div id="center" class="col-12 col-md-6 mx-auto border rounded" style="padding: 20px; background-color: rgba(220, 220, 220, 0.247); margin-top: 40px;">
+        <div>
+          <h1 class="text-center">Comienza a Calcular</h1>
+          <p class="text-center">Introduce el valor de los 3 lados para calcular el volumen. Se asume valor en metros.</p>
+        </div>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">W, H, D</span>
+          </div>
+          <input id="widthInput" min='1' type="number" aria-label="Width" class="form-control positive" placeholder="Anchura">
+          <input id="heightInput" min='1' type="number" aria-label="Height" class="form-control positive" placeholder="Altura">
+          <input id="depthInput" min='1' type="number" aria-label="Depth" class="form-control positive" placeholder="Profundidad">
+          <div class="input-group-append">
+            <span class="input-group-text">m</span>
+          </div>
+        </div>
+        <!--Extras-->
+        <div id="radio-mode" style="margin-top: 10px;">
+          <p>Modo:</p>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="radioMode" id="radioModeSelection0" value="0" checked>
+            <label class="form-check-label" for="radioModeSelection0">
+              Ninguno
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="radioMode" id="radioModeSelection1" value="1">
+            <label class="form-check-label" for="radioModeSelection1">
+              Contenedor con Cajas
+            </label>
+          </div>
+        </div>
+        <!--Hacer luego el cálculo de cajas optimizadas-->
+        <div id="container-mode" style="margin-top: 20px;" class="d-none">
+          <p class="text-center">Opcionalmente, puede calcular si requieren cajas para guardar dentro del contenedor.</p>
+            <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">W, H, D</span>
+            </div>
+            <input id="widthInputContainer" min='1' type="number" aria-label="Width" class="form-control positive" placeholder="Anchura">
+            <input id="heightInputContainer" min='1' type="number" aria-label="Height" class="form-control positive" placeholder="Altura">
+            <input id="depthInputContainer" min='1' type="number" aria-label="Depth" class="form-control positive" placeholder="Profundidad">
+            <div class="input-group-append">
+              <span class="input-group-text">m</span>
+            </div>
+          </div>
+        </div>
+        <div class="text-center" style="padding-top: 20px;">
+          <button id="getVolumeButton" type="button" class="btn btn-primary">Calcular</button>
+        </div>
+      </div>
+      <div id="cubeSize" class="col-12 col-md-8 mx-auto border rounded" style="padding: 20px; background-color: rgba(220, 220, 220, 0.247); margin-top: 40px;">
+        <p class="text-center">Una vez introducido los 3 lados, se mostrará el Volumen resultante y un cubo demostrando.</p>
+      </div>
+    </div>
+  </body>
+</html>
