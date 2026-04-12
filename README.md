@@ -4,6 +4,8 @@ Descripción: Un ejemplo JS demostrativo en el que se calcula el volumen de un c
 
 El proyecto fue creado con fines académicos y retomar área para un proyecto pendiente.
 
+Puedes ver el ejemplo en vivo aquí: https://hf1nacl.github.io/VolumePackCaculator/
+
 ---
 
 ## ⚙️ Tecnologías utilizadas
