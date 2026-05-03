@@ -1,6 +1,89 @@
 import { getVolumeTarget } from "../calcs";
+import isometricContainerHTML from '../../isometric-view/isometric-containers.html?raw';
+import { createGrid, createBox } from "../../isometric-view/isometric-view";
+import {
+  IsometricCanvas,
+  IsometricGroup,
+  IsometricPath,
+  IsometricRectangle,
+  IsometricText,
+} from '@elchininet/isometric'
 
 let widthContainer, heightContainer, depthContainer, widthBox, heightBox, depthBox;
+
+export function getIsometricViewBoxes(){
+    const div = document.getElementById("cubeSize");
+    const newIsometricView = document.createElement('div');
+    newIsometricView.innerHTML = isometricContainerHTML;
+    div.append(newIsometricView);
+    
+    //Una vez renderizado, empezamos a generar el contenido.
+    drawIsometric();
+}
+
+function drawIsometric(){
+    const divIsometric = document.getElementById('isometric-content-containers');
+    //Antes de definir los Elementos, se hace el Div tipo svg
+    const canvas = new IsometricCanvas({
+    container: divIsometric,
+    width: 720,
+    height: 460,
+    backgroundColor: '#f8fafc',
+    scale: 10,
+    })
+
+    //Primero se hace el Grid
+    const grid = createGrid({
+    width: 18,
+    depth: 14,
+    })
+
+    //Luego se hace el Suelo
+    const floor = new IsometricRectangle({
+    planeView: 'TOP',
+    width: 12,
+    height: 10,
+    right: 3,
+    left: 3,
+    fillColor: '#dbeafe',
+    strokeColor: '#94a3b8',
+    })
+
+    //Luego se hace la Caja
+    const box = createBox({
+    right: 100,
+    left: 100,
+    top: 100,
+    width: 13,
+    depth: 12,
+    height: 12,
+    colors: {
+        top: '#fef3c7',
+        front: '#f59e0b',
+        side: '#d97706',
+        stroke: '#78350f',
+    },
+    })
+
+    //Se hace el Label correspondiente
+    const label = new IsometricText({
+    content: 'Caja',
+    planeView: 'TOP',
+    right: 6.8,
+    left: 5.4,
+    top: 2.2,
+    fontSize: '14px',
+    fillColor: '#0f172a',
+    })
+
+    //Finalmente se define el Scene
+    const scene = new IsometricGroup({
+    top: 4,
+    })
+    
+    scene.addChildren(grid, floor, box, label)
+    canvas.addChild(scene);
+}
 
 export function calcOrientationBoxes(){
     [widthContainer, heightContainer, depthContainer] = getVolumeTarget(0);

@@ -1,2 +1,2 @@
-export { calcOrientationBoxes } from './containers/containers-boxes';
+export { calcOrientationBoxes, getIsometricViewBoxes } from './containers/containers-boxes';
 export { getVolumeTarget, formatNumber } from './calcs';
