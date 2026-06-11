@@ -13,9 +13,7 @@ radios.forEach(r => r.addEventListener("change", updateRadio));
 
 function calculateVolume(){
     let [width, height, depth] = getVolumeTarget(0);
-    //console.log(`Anchura: ${width} - Altura: - ${height} Profundidad: ${depth}`);
     let volume = width*height*depth;
-    //console.log(volume);
 
     //Generemos ahora el contenido del Volumen
     const div = document.getElementById("cubeSize");
@@ -25,10 +23,19 @@ function calculateVolume(){
     let calculation;
     switch(Number(radioValue)){
         case 0:
+            // Crearemos un wrapper que generará un elemento Bootstrap
+            const wrapper = document.createElement('div');
+            wrapper.className = 'col-12 col-md-8 mx-auto border rounded shadow-sm';
+            wrapper.style.cssText = 'padding: 20px; background-color: rgba(220, 220, 220, 0.247); margin-top: 40px;';
+            //El h3 se hace dentro del div
             calculation = document.createElement('h3');
             calculation.textContent = `El volumen es: ${Math.abs(volume)} m³`;
             calculation.className = 'text-center';
-            div.appendChild(calculation);
+
+            //Finalmente, Colocaremos primero el Wrapper al final dentro del div
+            //Luego colocaremos los cálculos luego del wrapper (Es orden inverso)
+            wrapper.appendChild(calculation)
+            div.appendChild(wrapper);
             break;
         case 1:
             div.innerHTML = containerHTML;
