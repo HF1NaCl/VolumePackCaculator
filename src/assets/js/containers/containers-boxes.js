@@ -1,5 +1,4 @@
 import { getVolumeTarget } from "../calcs";
-import isometricContainerHTML from '../../isometric-view/isometric-containers.html?raw';
 import { createGrid, createBox } from "../../isometric-view/isometric-view";
 import {
   IsometricCanvas,
@@ -10,53 +9,75 @@ import {
 } from '@elchininet/isometric'
 
 let widthContainer, heightContainer, depthContainer, widthBox, heightBox, depthBox;
+let resizeHandler = null;
 
-export function getIsometricViewBoxes(){
-    const div = document.getElementById("cubeSize");
-    const newIsometricView = document.createElement('div');
-    newIsometricView.innerHTML = isometricContainerHTML;
-    div.append(newIsometricView);
-    
-    //Una vez renderizado, empezamos a generar el contenido.
-    drawIsometric();
+function getResponsiveScale(availableWidth) {
+    if (availableWidth < 360)  return 18;   // móviles muy estrechos
+    if (availableWidth < 576)  return 16;   // móviles (sm)
+    if (availableWidth < 768)  return 14;   // tablets (md)
+    if (availableWidth < 992)  return 12;   // laptops pequeñas
+    if (availableWidth < 1200) return 10;   // desktop
+    return 9;                                 // pantallas grandes
 }
 
-function drawIsometric(){
+export function drawIsometric(){
     const divIsometric = document.getElementById('isometric-content-containers');
-    //Antes de definir los Elementos, se hace el Div tipo svg
+    divIsometric.innerHTML = '';
+    if(resizeHandler) {
+        window.removeEventListener('resize', resizeHandler);
+        resizeHandler = null;
+    }
+    //Medir Anchura y Altura de Card
+    const cardEl = divIsometric.closest('.card');
+    const cardBody = divIsometric.closest('.card-body') ?? divIsometric;
+    
+    const measureEl = cardEl ?? divIsometric;
+    const usableWidth = measureEl.clientWidth;
+    const usableHeight = cardBody.clientHeight;
+
+    const containerWidth = usableWidth > 0 ? usableWidth : 720;
+    const containerHeight = usableHeight > 0 ? usableHeight : Math.round(containerWidth * (460 / 720));
+    // Calcular Scale Responsivo según ancho
+    const viewportWidth = window.innerWidth;
+    const scale = getResponsiveScale(viewportWidth);
+    // Crear canvas con viewBox y medidas reales
     const canvas = new IsometricCanvas({
-    container: divIsometric,
-    width: 720,
-    height: 460,
-    backgroundColor: '#f8fafc',
-    scale: 10,
+        container: divIsometric,
+        width: containerWidth,
+        height: containerHeight,
+        backgroundColor: '#f8fafc',
+        scale: scale,
     })
+
+    const gridMargin = 3
+    const grid_width = widthContainer + gridMargin * 2;
+    const grid_depth = depthContainer + gridMargin* 2;
 
     //Primero se hace el Grid
     const grid = createGrid({
-    width: 18,
-    depth: 14,
+    width: grid_width,
+    depth: grid_depth,
     })
 
     //Luego se hace el Suelo
     const floor = new IsometricRectangle({
     planeView: 'TOP',
-    width: 12,
-    height: 10,
-    right: 3,
-    left: 3,
+    width: widthContainer,
+    height: heightContainer,
+    right: gridMargin,
+    left: gridMargin,
     fillColor: '#dbeafe',
     strokeColor: '#94a3b8',
     })
 
     //Luego se hace la Caja
     const box = createBox({
-    right: 100,
-    left: 100,
-    top: 100,
-    width: 13,
-    depth: 12,
-    height: 12,
+    right: gridMargin,
+    left: gridMargin,
+    top: 0,
+    width: widthBox,
+    depth: depthBox,
+    height: heightBox,
     colors: {
         top: '#fef3c7',
         front: '#f59e0b',
@@ -80,67 +101,53 @@ function drawIsometric(){
     const scene = new IsometricGroup({
     top: 4,
     })
-    
+
     scene.addChildren(grid, floor, box, label)
     canvas.addChild(scene);
+
+    //Definido y destruido al final en llamadas de drawIsometric para evitar problemas de redimensionamiento
+    let resizeTimer = null;
+    resizeHandler = () => {
+        if (resizeTimer) clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            const newWidth    = measureEl.clientWidth;
+            const newHeight   = cardBody.clientHeight;
+            const newViewport = window.innerWidth;
+            if (newWidth    !== containerWidth  ||
+                newHeight   !== containerHeight ||
+                newViewport !== viewportWidth) {
+                drawIsometric();
+            }
+        }, 150);
+    };
+    window.addEventListener('resize', resizeHandler);
 }
 
 export function calcOrientationBoxes(){
     [widthContainer, heightContainer, depthContainer] = getVolumeTarget(0);
     [widthBox, heightBox, depthBox] = getVolumeTarget(1);
 
-    const totales = [calcRotation(0), calcRotation(1), calcRotation(2), calcRotation(3), calcRotation(4), calcRotation(5)];
+    const totales = Array.from({ length: 6 }, (_, i) => calcRotation(i));
     const mayor = Math.max(...totales);
     console.log(mayor);
 
-    const box0 = document.getElementById("box0");
-    const box1 = document.getElementById("box1");
-    const box2 = document.getElementById("box2");
-    const box3 = document.getElementById("box3");
-    const box4 = document.getElementById("box4");
-    const box5 = document.getElementById("box5");
-
-    box0.innerHTML = (totales[0] === mayor) ? `<strong>${totales[0]}</strong>` : totales[0];
-    box1.innerHTML = (totales[1] === mayor) ? `<strong>${totales[1]}</strong>` : totales[1];
-    box2.innerHTML = (totales[2] === mayor) ? `<strong>${totales[2]}</strong>` : totales[2];
-    box3.innerHTML = (totales[3] === mayor) ? `<strong>${totales[3]}</strong>` : totales[3];
-    box4.innerHTML = (totales[4] === mayor) ? `<strong>${totales[4]}</strong>` : totales[4];
-    box5.innerHTML = (totales[5] === mayor) ? `<strong>${totales[5]}</strong>` : totales[5];
+    totales.forEach((total, i) => {
+        document.getElementById(`box${i}`).innerHTML =
+            total === mayor
+                ? `<strong>${total}</strong>`
+                : total;
+    });
 }
 
 function calcRotation(rotation){
     let x, y, z;
     switch(Number(rotation)){
-        case 0:
-            x = depthBox;
-            y = widthBox;
-            z = heightBox;
-            break;
-        case 1:
-            x = widthBox;
-            y = depthBox;
-            z = heightBox;
-            break;
-        case 2:
-            x = heightBox;
-            y = depthBox;
-            z = widthBox;
-            break;
-        case 3:
-            x = depthBox;
-            y = heightBox;
-            z = widthBox;
-            break;
-        case 4:
-            x = widthBox;
-            y = heightBox;
-            z = depthBox;
-            break;
-        case 5:
-            x = heightBox;
-            y = widthBox;
-            z = depthBox;
-            break;
+        case 0: x = depthBox; y = widthBox; z = heightBox; break;
+        case 1: x = widthBox; y = depthBox; z = heightBox; break;
+        case 2: x = heightBox; y = depthBox; z = widthBox; break;
+        case 3: x = depthBox; y = heightBox; z = widthBox; break;
+        case 4: x = widthBox; y = heightBox; z = depthBox; break;
+        case 5: x = heightBox; y = widthBox; z = depthBox; break;
     }
     let n_depth = Math.floor(depthContainer/x);
     let n_width = Math.floor(widthContainer/y);

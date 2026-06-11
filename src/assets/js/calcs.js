@@ -27,7 +27,7 @@ export function getVolumeTarget(volumeTarget){
         });
     }
 
-    return [width, height, depth];
+    return [Number(width), Number(height), Number(depth)];
 }
 
 export function formatNumber(num){

@@ -1,7 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import containerHTML from './assets/containers.html?raw';
-import { getVolumeTarget, formatNumber, calcOrientationBoxes, getIsometricViewBoxes } from './assets/js';
+import { getVolumeTarget, formatNumber, calcOrientationBoxes, drawIsometric } from './assets/js';
+import './style.css';
 //Contenidos
 const contenido1 = document.getElementById('container-mode');
 
@@ -32,7 +33,7 @@ function calculateVolume(){
         case 1:
             div.innerHTML = containerHTML;
             calculateContainers(volume, width, height, depth);
-            //getIsometricViewBoxes();
+            drawIsometric();
             break;
     }
 }

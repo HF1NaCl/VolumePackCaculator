@@ -1,2 +1,2 @@
-export { calcOrientationBoxes, getIsometricViewBoxes } from './containers/containers-boxes';
+export { calcOrientationBoxes, drawIsometric } from './containers/containers-boxes';
 export { getVolumeTarget, formatNumber } from './calcs';

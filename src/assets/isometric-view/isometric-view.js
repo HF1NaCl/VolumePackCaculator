@@ -37,32 +37,32 @@ export function createBox({
 
       const topFace = new IsometricRectangle({
           planeView: 'TOP',
-          width: 1,
-          height: 1,
+          width: width,
+          height: depth,
           fillColor: colors.top,
           strokeColor: colors.stroke,
       })
 
       const frontFace = new IsometricRectangle({
           planeView: 'FRONT',
-          width: 1,
-          height: 1,
+          width: depth,
+          height: height,
           fillColor: colors.front,
           strokeColor: colors.stroke,
       })
 
       const sideFace = new IsometricRectangle({
           planeView: 'SIDE',
-          width: 1,
-          height: 1,
+          width: width,
+          height: height,
           fillColor: colors.side,
           strokeColor: colors.stroke,
       })
 
       //Con esto se levanta y mueve para hacer un cubo exterior. Sin este solo es un cubo Interior
-      topFace.top = 1;
-      frontFace.right = 1;
-      sideFace.left = 1;
+      topFace.top = height;
+      frontFace.right = width;
+      sideFace.left = depth;
 
   box.addChildren(topFace, frontFace, sideFace)
   return box
