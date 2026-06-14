@@ -11,7 +11,7 @@ Puedes ver el ejemplo en vivo aquí: https://hf1nacl.github.io/VolumePackCaculat
 ## ⚙️ Tecnologías utilizadas
 
 - Lenguaje: JS y HTML con Bootstrap.
-- Framework: Vite
+- Build Tool: Vite
 - Entorno: Visual Studio Code
 
 ---
