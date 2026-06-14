@@ -1,2 +1,2 @@
 export * from './containers/containers-boxes';
-export * from './calcs';
+export * from './calcs/math-calcs';

@@ -1,7 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import containerHTML from './assets/containers.html?raw';
-import { getVolumeTarget, formatNumber, calcOrientationBoxes, drawIsometric } from './assets/js';
+import containerHTML from './assets/html/containers.html?raw';
+import errorHTML from './assets/html/error.html?raw';
+import { getVolumeTarget, formatNumber, calcOrientationBoxes, drawIsometric, initViewModeToggle } from './assets/js';
 import './style.css';
 //Contenidos
 const contenido1 = document.getElementById('container-mode');
@@ -12,6 +13,8 @@ document.getElementById("getVolumeButton").addEventListener("click", calculateVo
 radios.forEach(r => r.addEventListener("change", updateRadio));
 
 function calculateVolume(){
+
+
     let [width, height, depth] = getVolumeTarget(0);
     let volume = width*height*depth;
 
@@ -38,9 +41,15 @@ function calculateVolume(){
             div.appendChild(wrapper);
             break;
         case 1:
+            const validCalculate = isValidCalculation(width, height, depth);
+            if(!validCalculate){
+                div.innerHTML = errorHTML;
+                break
+            };
             div.innerHTML = containerHTML;
             calculateContainers(volume, width, height, depth);
             drawIsometric();
+            initViewModeToggle();
             break;
     }
 }
@@ -55,6 +64,16 @@ function updateRadio(){
             contenido1.classList.remove("d-none");
             break;
     }
+}
+
+function isValidCalculation(width, height, depth){
+    let [widthBox, heightBox, depthBox] = getVolumeTarget(1);
+
+    if((widthBox>width)||(heightBox>height)||(depthBox>depth)){
+        alert("La caja supera el tamaño del contenedor.")
+        return false;
+    }
+    return true;
 }
 
 function calculateContainers(volume, width, height, depth){

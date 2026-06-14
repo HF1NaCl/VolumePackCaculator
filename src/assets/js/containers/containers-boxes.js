@@ -1,106 +1,117 @@
-import { getVolumeTarget } from "../calcs";
-import { createGrid, createBox } from "../../isometric-view/isometric-view";
-import {
-  IsometricCanvas,
-  IsometricGroup,
-  IsometricPath,
-  IsometricRectangle,
-  IsometricText,
-} from '@elchininet/isometric'
+import { getVolumeTarget } from "../calcs/math-calcs";
+import { getResponsiveScale } from "../calcs/window-calcs";
+import { createBox, createSegmentedBox, clearIsoContainer, getIsoLayout, createIsoCanvas, createSceneBase } from "./draw-isometric-view";
+import { IsometricText } from '@elchininet/isometric'
+
+import { GRID_MARGIN, BOX_COLORS } from "./settings";
 
 let widthContainer, heightContainer, depthContainer, widthBox, heightBox, depthBox;
 let resizeHandler = null;
+let currentViewMode = '1c';
 
-function getResponsiveScale(availableWidth, containerHeight, boxHeight) {
-    // Escala base según ancho
-    let baseScale;
-    if (availableWidth < 360)  baseScale = 18;   // móviles muy estrechos
-    else if (availableWidth < 576)  baseScale = 16;   // móviles (sm)
-    else if (availableWidth < 768)  baseScale = 14;   // tablets (md)
-    else if (availableWidth < 992)  baseScale = 12;   // laptops pequeñas
-    else if (availableWidth < 1200) baseScale = 10;   // desktop
-    else baseScale = 9;                                 // pantallas grandes
-    
-    // Ajustar por altura: si la caja es muy alta, reducir escala
-    const maxHeightForScale = containerHeight * 0.7; // Usar 70% del contenedor disponible
-    const estimatedHeightAtScale = boxHeight * baseScale * 1.5; // Factor de conversión isométrica
-    
-    if (estimatedHeightAtScale > maxHeightForScale) {
-        const scaleFactor = maxHeightForScale / estimatedHeightAtScale;
-        return Math.max(2, baseScale * scaleFactor); // Mínimo 2 para legibilidad
-    }
-    
-    return baseScale;
+function removeIsoResize() {
+  if (resizeHandler) {
+    window.removeEventListener('resize', resizeHandler)
+    resizeHandler = null
+  }
 }
 
-export function drawIsometric(){
-    const divIsometric = document.getElementById('isometric-content-containers');
-    divIsometric.innerHTML = '';
-    if(resizeHandler) {
-        window.removeEventListener('resize', resizeHandler);
-        resizeHandler = null;
-    }
-    //Medir Anchura y Altura de Card
-    const cardEl = divIsometric.closest('.card');
-    const cardBody = divIsometric.closest('.card-body') ?? divIsometric;
-    
-    const measureEl = cardEl ?? divIsometric;
-    const usableWidth = measureEl.clientWidth;
-    const usableHeight = cardBody.clientHeight;
+function bindIsoResize(renderFn) {
+  let resizeTimer = null
 
-    const containerWidth = usableWidth > 0 ? usableWidth : 720;
-    const containerHeight = usableHeight > 0 ? usableHeight : Math.round(containerWidth * (460 / 720));
-    // Calcular Scale Responsivo según ancho Y altura de la caja
-    const viewportWidth = window.innerWidth;
-    const scale = getResponsiveScale(viewportWidth, containerHeight, heightBox);
-    // Crear canvas con viewBox y medidas reales
-    const canvas = new IsometricCanvas({
-        container: divIsometric,
-        width: containerWidth,
-        height: containerHeight,
-        backgroundColor: '#f8fafc',
-        scale: scale,
+  resizeHandler = () => {
+    if (resizeTimer) clearTimeout(resizeTimer)
+
+    resizeTimer = setTimeout(() => {
+      renderFn()
+    }, 150)
+  }
+
+  window.addEventListener('resize', resizeHandler)
+}
+
+// Helpers
+function getBoxOrientations() {
+  return [
+    { unitWidth: widthBox, unitDepth: depthBox, unitHeight: heightBox },
+    { unitWidth: depthBox, unitDepth: widthBox, unitHeight: heightBox },
+    { unitWidth: widthBox, unitDepth: heightBox, unitHeight: depthBox },
+    { unitWidth: heightBox, unitDepth: widthBox, unitHeight: depthBox },
+    { unitWidth: depthBox, unitDepth: heightBox, unitHeight: widthBox },
+    { unitWidth: heightBox, unitDepth: depthBox, unitHeight: widthBox },
+  ]
+}
+
+function getBestPackedBox() {
+  return getBoxOrientations()
+    .map((orientation) => {
+      const countWidth = Math.floor(widthContainer / orientation.unitWidth)
+      const countDepth = Math.floor(depthContainer / orientation.unitDepth)
+      const countHeight = Math.floor(heightContainer / orientation.unitHeight)
+      const total = countWidth * countDepth * countHeight
+
+      return {
+        ...orientation,
+        countWidth,
+        countDepth,
+        countHeight,
+        total,
+        width: countWidth * orientation.unitWidth,
+        depth: countDepth * orientation.unitDepth,
+        height: countHeight * orientation.unitHeight,
+      }
     })
+    .sort((a, b) => {
+      if (b.total !== a.total) return b.total - a.total
 
-    const gridMargin = 3
-    const grid_width = widthContainer + gridMargin * 2;
-    const grid_depth = depthContainer + gridMargin* 2;
+      const wasteA =
+        widthContainer - a.width +
+        depthContainer - a.depth +
+        heightContainer - a.height
 
-    //Primero se hace el Grid
-    const grid = createGrid({
-    width: grid_width,
-    depth: grid_depth,
+      const wasteB =
+        widthContainer - b.width +
+        depthContainer - b.depth +
+        heightContainer - b.height
+
+      return wasteA - wasteB
+    })[0]
+}
+
+// Funciones
+export function initViewModeToggle() {
+    const radios = document.querySelectorAll('input[name="viewMode"]')
+    radios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            currentViewMode = e.target.value;
+            if(currentViewMode === '1c') {
+                drawIsometric();
+            } else {
+                drawBoxes();
+            }
+        })
     })
+}
 
-    //Luego se hace el Suelo
-    const floor = new IsometricRectangle({
-    planeView: 'TOP',
-    width: widthContainer,
-    height: heightContainer,
-    right: gridMargin,
-    left: gridMargin,
-    fillColor: '#dbeafe',
-    strokeColor: '#94a3b8',
-    })
+export function drawIsometric() {
+  removeIsoResize()
 
-    //Luego se hace la Caja
-    const box = createBox({
-    right: gridMargin,
-    left: gridMargin,
+  const container = clearIsoContainer()
+  const layout = getIsoLayout(container)
+  const scale = getResponsiveScale(layout.viewportWidth, layout.height, heightBox)
+  const canvas = createIsoCanvas(container, layout, scale)
+
+  const box = createBox({
+    right: GRID_MARGIN,
+    left: GRID_MARGIN,
     top: 0,
     width: widthBox,
     depth: depthBox,
     height: heightBox,
-    colors: {
-        top: '#fef3c7',
-        front: '#f59e0b',
-        side: '#d97706',
-        stroke: '#78350f',
-    },
-    })
+    colors: BOX_COLORS,
+  })
 
-    //Se hace el Label correspondiente
-    const label = new IsometricText({
+  const label = new IsometricText({
     content: 'Caja',
     planeView: 'TOP',
     right: 6.8,
@@ -108,34 +119,66 @@ export function drawIsometric(){
     top: 2.2,
     fontSize: '14px',
     fillColor: '#0f172a',
-    })
+  })
 
-    //Finalmente se define el Scene
-    const scene = new IsometricGroup({
-    top: 4,
-    })
+  const scene = createSceneBase({
+    widthContainer,
+    depthContainer,
+  })
 
-    scene.addChildren(grid, floor, box, label)
-    canvas.addChild(scene);
+  scene.addChildren(box, label)
 
-    //Definido y destruido al final en llamadas de drawIsometric para evitar problemas de redimensionamiento
-    let resizeTimer = null;
-    resizeHandler = () => {
-        if (resizeTimer) clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-            const newWidth    = measureEl.clientWidth;
-            const newHeight   = cardBody.clientHeight;
-            const newViewport = window.innerWidth;
-            const newScale = getResponsiveScale(newViewport, newHeight, heightBox);
-            if (newWidth    !== containerWidth  ||
-                newHeight   !== containerHeight ||
-                newViewport !== viewportWidth ||
-                newScale    !== scale) {
-                drawIsometric();
-            }
-        }, 150);
-    };
-    window.addEventListener('resize', resizeHandler);
+  canvas.addChild(scene)
+  bindIsoResize(drawIsometric)
+}
+
+function drawBoxes() {
+  removeIsoResize()
+
+  const container = clearIsoContainer()
+  const packed = getBestPackedBox()
+
+  if (!packed || packed.total === 0) {
+    container.innerHTML = '<p class="text-center text-muted">La caja no cabe en el contenedor.</p>'
+    return
+  }
+
+  const layout = getIsoLayout(container)
+  const scale = getResponsiveScale(layout.viewportWidth, layout.height, packed.height)
+  const canvas = createIsoCanvas(container, layout, scale)
+
+  const groupedBox = createSegmentedBox({
+    right: GRID_MARGIN,
+    left: GRID_MARGIN,
+    top: 0,
+    width: packed.width,
+    depth: packed.depth,
+    height: packed.height,
+    segmentWidth: packed.unitWidth,
+    segmentDepth: packed.unitDepth,
+    segmentHeight: packed.unitHeight,
+    colors: BOX_COLORS,
+  })
+
+  const label = new IsometricText({
+    content: `${packed.total} cajas`,
+    planeView: 'TOP',
+    right: GRID_MARGIN,
+    left: GRID_MARGIN,
+    top: packed.height + 1,
+    fontSize: '14px',
+    fillColor: '#0f172a',
+  })
+
+  const scene = createSceneBase({
+    widthContainer,
+    depthContainer,
+  })
+
+  scene.addChildren(groupedBox, label)
+
+  canvas.addChild(scene)
+  bindIsoResize(drawBoxes)
 }
 
 export function calcOrientationBoxes(){
@@ -144,7 +187,6 @@ export function calcOrientationBoxes(){
 
     const totales = Array.from({ length: 6 }, (_, i) => calcRotation(i));
     const mayor = Math.max(...totales);
-    console.log(mayor);
 
     totales.forEach((total, i) => {
         document.getElementById(`box${i}`).innerHTML =
