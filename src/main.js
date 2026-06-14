@@ -11,6 +11,7 @@ const radios = document.querySelectorAll('input[name="radioMode"]');
 document.getElementById("getVolumeButton").addEventListener("click", calculateVolume);
 
 radios.forEach(r => r.addEventListener("change", updateRadio));
+document.getElementById("year").textContent = new Date().getFullYear();
 
 function calculateVolume(){
 

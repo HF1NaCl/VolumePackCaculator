@@ -1,6 +1,6 @@
 html, body {
-    overflow-x: clip;
-    scrollbar-gutter: stable;
+    overflow-x: hidden;
+    max-width: 100%;
 }
 
 #isometric-content-containers {
