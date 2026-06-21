@@ -1,20 +1,78 @@
+:root {
+  --app-bg: #FCE8E8;
+  --app-surface: rgba(220, 220, 220, 0.247);
+  --app-border: #ced4da;
+  --app-text: #212529;
+  --app-muted: #6c757d;
+  --app-accent: #0d6efd;
+  --app-accent-hover: #0041a1;
+  --app-icon: #343a40;
+}
+
+:root[data-bs-theme="dark"],
+body.dark-mode {
+  --app-bg: #420606;
+  --app-surface: #1e293b;
+  --app-border: #475569;
+  --app-text: #e2e8f0;
+  --app-muted: #94a3b8;
+  --app-accent: #ff7300;
+  --app-accent-hover: #914100;
+  --app-icon: #cbd5e1;
+}
+
 html, body {
-    overflow-x: hidden;
-    max-width: 100%;
+  overflow-x: hidden;
+  max-width: 100%;
+  background-color: var(--app-bg);
+  color: var(--app-text);
+}
+
+#center,
+#cubeSize .border,
+footer,
+.col-12.col-md-8.border,
+.col-12.col-md-5.mx-auto.border {
+  background-color: var(--app-surface);
+  border-color: var(--app-border) !important;
+}
+
+footer {
+  color: var(--app-text);
+}
+
+.btn-primary {
+  background-color: var(--app-accent);
+  border-color: var(--app-accent);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--app-accent-hover);
+  border-color: var(--app-accent-hover);
+}
+
+.form-check-input:checked{
+    background-color: var(--app-accent);
+    border-color: var(--app-accent);
+}
+
+#darkToggle i.bi-lightbulb-fill {
+  color: var(--app-icon);
 }
 
 #isometric-content-containers {
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    overflow: hidden;
-    position: relative;
-    min-height: 320px;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  overflow: hidden;
+  position: relative;
+  min-height: 320px;
 }
 
 #isometric-content-containers svg {
-    width: 100% !important;
-    height: auto !important;
-    display: block;
-    preserveAspectRatio: none;
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+  preserveAspectRatio: none;
 }

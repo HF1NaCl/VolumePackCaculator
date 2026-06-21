@@ -3,6 +3,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import containerHTML from './assets/html/containers.html?raw';
 import errorHTML from './assets/html/error.html?raw';
 import { getVolumeTarget, formatNumber, calcOrientationBoxes, drawIsometric, initViewModeToggle } from './assets/js';
+import initDarkMode from './assets/js/darkMode'
 import './style.css';
 //Contenidos
 const contenido1 = document.getElementById('container-mode');
@@ -13,9 +14,9 @@ document.getElementById("getVolumeButton").addEventListener("click", calculateVo
 radios.forEach(r => r.addEventListener("change", updateRadio));
 document.getElementById("year").textContent = new Date().getFullYear();
 
+initDarkMode('darkToggle');
+
 function calculateVolume(){
-
-
     let [width, height, depth] = getVolumeTarget(0);
     let volume = width*height*depth;
 

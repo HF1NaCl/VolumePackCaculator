@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Calculadora de Volumenes</title>
   </head>
-  <body class="d-flex flex-column min-vh-100" style="background-color: rgb(252, 232, 232);">
+  <body class="d-flex flex-column min-vh-100">
     <main class="container flex-grow-1 py-4">
       <section class="row justify-content-center">
         <div id="center" class="col-12 col-md-8 col-lg-6 border rounded shadow-sm" style="padding: 20px; background-color: rgba(220, 220, 220, 0.247);">
@@ -72,14 +72,18 @@
     </main>
 
     <footer class="mt-auto bg-secondary text-white text-center py-1 border-top w-100">
-      <div class="justify-content-center d-flex justify-content-between align-items-center gap-5">
-        <div class="ms-5">
-          <p class="text-center mb-0 mt-2 fs-6">
+      <div class="d-flex justify-content-between align-items-center px-5">
+        <div class="d-flex align-items-center">
+          <p class="text-center mb-0 fs-6">
             <span id="year"></span> 
             HF1NaCl.
           </p>
+          <div class="vr mx-3"></div>
+          <button id="darkToggle" type="button" class="btn" data-bs-toggle="button">
+            <i class="bi bi-lightbulb-fill"></i>
+          </button>
         </div>
-        <div class="me-5">
+        <div class="d-flex align-items-center">
           <div class="vr mx-3"></div>
           <a href="https://github.com/HF1NaCl" target="_blank" class="text-white">
               <i class="bi bi-github fs-2"></i>
