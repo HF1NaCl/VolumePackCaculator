@@ -52,6 +52,7 @@ footer {
   border-color: var(--app-accent-hover);
 }
 
+
 .form-check-input:checked{
     background-color: var(--app-accent);
     border-color: var(--app-accent);
