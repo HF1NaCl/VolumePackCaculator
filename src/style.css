@@ -1,5 +1,5 @@
 :root {
-  --app-bg: #FCE8E8;
+  --app-bg: #fce8e8;
   --app-surface: rgba(220, 220, 220, 0.247);
   --app-border: #ced4da;
   --app-text: #212529;
@@ -9,7 +9,7 @@
   --app-icon: #343a40;
 }
 
-:root[data-bs-theme="dark"],
+:root[data-bs-theme='dark'],
 body.dark-mode {
   --app-bg: #420606;
   --app-surface: #1e293b;
@@ -21,7 +21,8 @@ body.dark-mode {
   --app-icon: #cbd5e1;
 }
 
-html, body {
+html,
+body {
   overflow-x: hidden;
   max-width: 100%;
   background-color: var(--app-bg);
@@ -52,10 +53,9 @@ footer {
   border-color: var(--app-accent-hover);
 }
 
-
-.form-check-input:checked{
-    background-color: var(--app-accent);
-    border-color: var(--app-accent);
+.form-check-input:checked {
+  background-color: var(--app-accent);
+  border-color: var(--app-accent);
 }
 
 #darkToggle i.bi-lightbulb-fill {
@@ -64,16 +64,63 @@ footer {
 
 #isometric-content-containers {
   width: 100%;
-  height: 100%;
+  min-height: 320px;
   border-radius: inherit;
   overflow: hidden;
   position: relative;
-  min-height: 320px;
+  background-color: #f8fafc;
 }
 
 #isometric-content-containers svg {
   width: 100% !important;
-  height: auto !important;
+  min-height: 320px;
   display: block;
-  preserveAspectRatio: none;
+}
+
+.box-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--app-border);
+  border-radius: 0.5rem;
+  background-color: var(--app-surface);
+  color: var(--app-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.box-badge-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--app-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.box-badge-remove:hover,
+.box-badge-remove:focus-visible {
+  background-color: var(--app-accent);
+  color: #fff;
+}
+
+#customBoxes {
+  max-height: 9rem;
+  overflow-y: auto;
+  align-content: flex-start;
+  padding: 0.5rem;
+  border: 1px solid var(--app-border);
+  border-radius: 0.5rem;
+  scrollbar-gutter: stable;
+}
+
+#customBoxes:empty {
+  display: none !important;
 }

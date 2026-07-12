@@ -6,6 +6,8 @@ El proyecto fue creado con fines académicos y retomar área para un proyecto pe
 
 Puedes ver el ejemplo en vivo aquí: https://hf1nacl.github.io/VolumePackCaculator/
 
+El paquete Isométrico está hecho por elchininet con su paquete Isometric: https://www.npmjs.com/package/@elchininet/isometric?activeTab=readme
+
 ---
 
 ## ⚙️ Tecnologías utilizadas
@@ -13,13 +15,9 @@ Puedes ver el ejemplo en vivo aquí: https://hf1nacl.github.io/VolumePackCaculat
 - Lenguaje: JS y HTML con Bootstrap.
 - Build Tool: Vite
 - Entorno: Visual Studio Code
+- Paquete NPM: [isometric](https://www.npmjs.com/package/@elchininet/isometric?activeTab=readme)
 
 ---
-
-## Planes a futuro
-
-La idea de este repositorio es poder utilizarlo para adaptarlo a node.js siendo desde un API o en un módulo interno para usarlo en otro software pendiente de desarrollo.
-
 
 ### Notas finales
 
