@@ -47,7 +47,7 @@ function addCustomBox(containerSize, renderScene) {
   const nextBoxes = [...customBoxes, box];
   const placedBoxes = placeBoxes(containerSize, nextBoxes);
 
-  if (!placeBoxes) {
+  if (!placedBoxes) {
     alert('No existe espacio físico para colocar esta caja.');
     return;
   }
