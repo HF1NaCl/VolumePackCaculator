@@ -16,6 +16,7 @@ El paquete Isométrico está hecho por elchininet con su paquete Isometric: http
 - Build Tool: Vite
 - Entorno: Visual Studio Code
 - Paquete NPM: [isometric](https://www.npmjs.com/package/@elchininet/isometric?activeTab=readme)
+- Gestor de Paquetes: PNPM
 
 ---
 
